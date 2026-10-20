@@ -58,14 +58,21 @@ def checked(command, cwd=None, env=None):
 
 
 def extract_archive(archive, destination):
-    """Reject archive members outside the destination before extracting."""
+    """Allow internal repository links while rejecting extraction outside it."""
+    if not hasattr(tarfile, "data_filter"):
+        raise RuntimeError("Task extraction requires a current Python security release (or the supplied Docker image)")
     base = Path(destination).resolve()
+    def checked_member(member, path):
+        target = (base / member.name).resolve()
+        if Path(member.name).is_absolute() or (target != base and base not in target.parents):
+            raise ValueError("Unsafe archive member")
+        # Evaluate each member at extraction time so earlier links cannot turn
+        # a later member into an escape. The standard data filter also checks
+        # link destinations and rejects device nodes and other special files.
+        return tarfile.data_filter(member, path)
+
     with tarfile.open(archive) as source:
-        for member in source.getmembers():
-            target = (base / member.name).resolve()
-            if (target != base and base not in target.parents) or member.issym() or member.islnk():
-                raise ValueError("Unsafe archive member")
-        source.extractall(destination)
+        source.extractall(destination, filter=checked_member)
 
 
 def run_cmd(cmd, cwd, timeout=120, venv=None):

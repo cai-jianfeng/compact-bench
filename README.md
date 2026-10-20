@@ -12,7 +12,7 @@ and caches them locally. No manual dataset download is needed.
 
 ## Run
 
-For all three tracks, use Linux and Python 3.9+ with `git` and `patch` installed,
+For all three tracks, use Linux and Python 3.9+ (a current patch release) with `git` and `patch` installed,
 or use the Docker command below. Python 3.9 is recommended for the historical task
 repositories. Retention and production scoring also run on Windows and macOS.
 The harness itself uses only Python's standard library; task dependencies are

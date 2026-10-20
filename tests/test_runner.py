@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import unittest
@@ -151,6 +152,42 @@ class RunnerTests(unittest.TestCase):
         sibling.mkdir()
         (sibling / "marker").write_text("synthetic marker")
         self.assertEqual(R.read_file("../repo-other/marker", str(repo)), "blocked: path escape")
+
+    def test_archive_allows_internal_repository_links(self):
+        archive = self.temp / "fixture.tar"
+        with tarfile.open(archive, "w") as output:
+            member = tarfile.TarInfo("repo/content.txt")
+            payload = b"fixture"
+            member.size = len(payload)
+            output.addfile(member, io.BytesIO(payload))
+            for name, kind, target in (("repo/symlink", tarfile.SYMTYPE, "content.txt"),
+                                       ("repo/hardlink", tarfile.LNKTYPE, "repo/content.txt")):
+                link = tarfile.TarInfo(name)
+                link.type, link.linkname = kind, target
+                output.addfile(link)
+        destination = self.temp / "extracted"
+        R.extract_archive(archive, destination)
+        self.assertEqual((destination / "repo/symlink").read_bytes(), payload)
+        self.assertEqual((destination / "repo/hardlink").read_bytes(), payload)
+
+    def test_archive_rejects_escapes_and_special_files(self):
+        cases = [
+            ("../escaped", tarfile.REGTYPE, ""),
+            ("escape", tarfile.SYMTYPE, "../escaped"),
+            ("escape", tarfile.LNKTYPE, "../escaped"),
+            ("escape", tarfile.SYMTYPE, str(self.temp / "escaped")),
+            ("pipe", tarfile.FIFOTYPE, ""),
+        ]
+        for index, (name, kind, target) in enumerate(cases):
+            with self.subTest(name=name, kind=kind, target=target):
+                archive = self.temp / f"unsafe-{index}.tar"
+                with tarfile.open(archive, "w") as output:
+                    member = tarfile.TarInfo(name)
+                    member.type, member.linkname = kind, target
+                    output.addfile(member)
+                with self.assertRaises((ValueError, tarfile.FilterError)):
+                    R.extract_archive(archive, self.temp / f"extract-{index}")
+                self.assertFalse((self.temp / "escaped").exists())
 
     def test_xb_loads_state_before_summary(self):
         import e1_xb as X
