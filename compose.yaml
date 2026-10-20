@@ -1,0 +1,14 @@
+services:
+  bench:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./results:/bench/results
+      - benchmark-data:/bench/data
+      - benchmark-work:/bench/work
+    init: true
+
+volumes:
+  benchmark-data:
+  benchmark-work:

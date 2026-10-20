@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Compact-Bench stored record schemas",
+  "description": "Validate records using the matching $defs entry; schemas document saved records, not private raw-payload transport.",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/e2_sample"
+    },
+    {
+      "$ref": "#/$defs/e2_output"
+    },
+    {
+      "$ref": "#/$defs/e3_result"
+    }
+  ],
+  "$defs": {
+    "e2_sample": {
+      "type": "object",
+      "properties": {
+        "sample_id": {
+          "type": "string"
+        },
+        "sess": {
+          "type": "string"
+        },
+        "client": {
+          "type": "string"
+        },
+        "boundary_idx": {
+          "type": "integer"
+        },
+        "n_reqs": {
+          "type": "integer"
+        },
+        "H": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "F_len": {
+          "type": "integer"
+        },
+        "atoms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "path",
+                  "sha",
+                  "pr",
+                  "error",
+                  "url",
+                  "kv",
+                  "ip"
+                ]
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "n_atoms": {
+          "type": "integer"
+        },
+        "future_req_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "sample_id",
+        "sess",
+        "client",
+        "boundary_idx",
+        "n_reqs",
+        "H",
+        "F_len",
+        "atoms",
+        "n_atoms",
+        "future_req_ids"
+      ],
+      "additionalProperties": true
+    },
+    "e2_output": {
+      "type": "object",
+      "properties": {
+        "sample_id": {
+          "type": "string"
+        },
+        "client": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string"
+        },
+        "S": {
+          "type": "string"
+        },
+        "S_len": {
+          "type": "integer"
+        },
+        "recall": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "n_atoms": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sample_id",
+        "client",
+        "variant"
+      ],
+      "additionalProperties": true,
+      "anyOf": [
+        {
+          "required": [
+            "error"
+          ]
+        },
+        {
+          "required": [
+            "S",
+            "S_len",
+            "recall",
+            "n_atoms"
+          ]
+        }
+      ]
+    },
+    "e3_result": {
+      "type": "object",
+      "properties": {
+        "sess": {
+          "type": "string"
+        },
+        "client": {
+          "type": "string"
+        },
+        "n_bounds": {
+          "type": "integer"
+        },
+        "per_k": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "k": {
+                "type": "integer"
+              },
+              "marker": {
+                "type": "string"
+              },
+              "form": {
+                "type": "string"
+              },
+              "n_atoms_F": {
+                "type": "integer"
+              },
+              "R_k": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "triplet_errors": {
+                "type": "integer"
+              },
+              "S_len": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "k",
+              "marker",
+              "form",
+              "n_atoms_F",
+              "R_k",
+              "triplet_errors",
+              "S_len"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "ratio_last_first": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "sess",
+        "client",
+        "n_bounds",
+        "per_k",
+        "ratio_last_first"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,11 @@
+results/
+work/
+data/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+!.env.example
+.venv/
+*.tmp

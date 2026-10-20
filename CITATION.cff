@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, please cite this repository."
+title: "Compact-Bench: Measuring What Context Compaction Costs Long-Horizon Coding Agents"
+type: software
+authors:
+  - name: "Compact-Bench contributors"
+repository-code: "https://github.com/cai-jianfeng/compact-bench"
+abstract: >-
+  Compact-Bench measures what context compaction costs long-horizon coding
+  agents: Task Preservation on 35 SWE-bench repair tasks, Recurring-Detail
+  Retention on 146 agentic sessions, and Production-Chain Retention across
+  106 real multi-compaction chains.
+keywords:
+  - context compaction
+  - coding agents
+  - benchmark
+  - long-horizon tasks
+license: Apache-2.0

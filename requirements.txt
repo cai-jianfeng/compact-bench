@@ -1,0 +1,2 @@
+# Compact-Bench harness has no third-party dependencies (Python standard library only).
+# Python >= 3.9. Instance venvs are built per task with pip (needs network).
